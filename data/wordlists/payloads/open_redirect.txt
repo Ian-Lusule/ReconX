@@ -1,0 +1,4 @@
+https://evil.com
+//evil.com
+/redirect?url=https://evil.com
+/next?url=https://evil.com
