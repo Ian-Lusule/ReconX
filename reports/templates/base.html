@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReconX Scan Report - {{ scan_results.target }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+        .container {
+            max-width: 1000px;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+        }
+        .header-section {
+            background-color: #1a202c;
+            color: #ffffff;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            margin-bottom: 2rem;
+        }
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        .status-completed { background-color: #10b981; color: #ffffff; } /* Green */
+        .status-in-progress { background-color: #f59e0b; color: #ffffff; } /* Yellow */
+        .status-failed { background-color: #ef4444; color: #ffffff; } /* Red */
+
+        .severity-critical { color: #dc2626; font-weight: 700; } /* Red */
+        .severity-high { color: #f59e0b; font-weight: 700; }    /* Orange */
+        .severity-medium { color: #fbbf24; font-weight: 600; }   /* Yellow */
+        .severity-low { color: #3b82f6; font-weight: 500; }     /* Blue */
+        .severity-info { color: #6b7280; font-weight: 400; }     /* Gray */
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 0.5rem;
+        }
+        .code-block {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="p-6">
+    <div class="container mx-auto">
+        <div class="header-section text-center">
+            <h1 class="text-4xl font-extrabold mb-2">ReconX Scan Report</h1>
+            <p class="text-xl mb-4">Target: <span class="font-bold">{{ scan_results.target }}</span></p>
+            <p class="text-lg">Scan Date: {{ report_date }}</p>
+            <span class="status-badge
+                {% if scan_results.status == 'Completed' %}status-completed
+                {% elif scan_results.status == 'In Progress' %}status-in-progress
+                {% elif scan_results.status == 'Failed' %}status-failed
+                {% endif %}">
+                Status: {{ scan_results.status }}
+            </span>
+        </div>
+
+        <div class="card">
+            <h2 class="section-title">Technologies Detected</h2>
+            {% if scan_results.technologies %}
+                <ul>
+                    {% for tech, info in scan_results.technologies.items() %}
+                        <li>
+                            <span class="font-semibold">{{ tech }}</span>
+                            {% if info.version %}(Version: {{ info.version }}){% endif %}
+                            (Source: {{ info.source }})
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No technologies detected.</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h2 class="section-title">Endpoints Discovered</h2>
+            {% if scan_results.endpoints %}
+                <ul>
+                    {% for ep in scan_results.endpoints %}
+                        <li><a href="{{ ep }}" target="_blank" rel="noopener noreferrer">{{ ep }}</a></li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No endpoints discovered.</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h2 class="section-title">Subdomains Discovered</h2>
+            {% if scan_results.subdomains %}
+                <ul>
+                    {% for sd in scan_results.subdomains %}
+                        <li><a href="{{ sd }}" target="_blank" rel="noopener noreferrer">{{ sd }}</a></li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No subdomains discovered.</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h2 class="section-title">Open Ports</h2>
+            {% if scan_results.ports %}
+                {% for host, ports in scan_results.ports.items() %}
+                    <h3 class="font-semibold text-lg mt-4 mb-2">{{ host }}</h3>
+                    {% if ports %}
+                        <ul>
+                            {% for p_info in ports %}
+                                <li>Port {{ p_info.port }}: <span class="font-medium">{{ p_info.status }}</span></li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No open ports detected for this host.</p>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <p>Port scan not performed or no open ports found.</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h2 class="section-title">Vulnerabilities Identified</h2>
+            {% if scan_results.vulnerabilities %}
+                <ul>
+                    {% for vuln_entry in scan_results.vulnerabilities %}
+                        <li>
+                            <span class="font-bold text-red-600">[VULNERABLE]</span>
+                            <span class="font-semibold">{{ vuln_entry.technology }}</span>
+                            {% if vuln_entry.version %}v{{ vuln_entry.version }}{% endif %}:
+                            {{ vuln_entry.vulnerability.description }}
+                            (Severity: <span class="severity-{{ vuln_entry.vulnerability.severity | lower }}">{{ vuln_entry.vulnerability.severity }}</span>,
+                            CVE: {{ vuln_entry.vulnerability.cve | join(', ') or 'N/A' }})
+                            {% if vuln_entry.vulnerability.exploit_link %}
+                                <br> <a href="{{ vuln_entry.vulnerability.exploit_link }}" target="_blank" rel="noopener noreferrer" class="text-sm">Exploit Link</a>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No vulnerabilities identified.</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h2 class="section-title">Security Headers Analysis</h2>
+            {% set headers_info = scan_results.headers_info %}
+            {% if headers_info %}
+                <p class="font-semibold">Missing Headers ({{ headers_info.missing_headers | length }}):</p>
+                {% if headers_info.missing_headers %}
+                    <ul>
+                        {% for h in headers_info.missing_headers %}
+                            <li>- {{ h.header }} (Severity: <span class="severity-{{ h.severity | lower }}">{{ h.severity }}</span>) - {{ h.description }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No missing security headers.</p>
+                {% endif %}
+
+                <p class="font-semibold mt-4">Insecure Headers ({{ headers_info.insecure_headers | length }}):</p>
+                {% if headers_info.insecure_headers %}
+                    <ul>
+                        {% for h in headers_info.insecure_headers %}
+                            <li>- {{ h.header }}: <span class="font-mono">{{ h.value }}</span> (Issue: {{ h.issue }}, Severity: <span class="severity-{{ h.severity | lower }}">{{ h.severity }}</span>)</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No insecure header configurations found.</p>
+                {% endif %}
+
+                <p class="font-semibold mt-4">Content-Security-Policy:</p>
+                <p>Status: {{ 'Present' if headers_info.content_security_policy.present else 'Missing' }}</p>
+                {% if headers_info.content_security_policy.policy %}
+                    <p class="code-block">{{ headers_info.content_security_policy.policy }}</p>
+                {% endif %}
+                {% if headers_info.content_security_policy.issues %}
+                    <p class="font-semibold text-red-600">CSP Issues:</p>
+                    <ul>
+                        {% for issue in headers_info.content_security_policy.issues %}
+                            <li>- {{ issue }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                <p class="font-semibold mt-4">CORS Status: {{ headers_info.cors_status }}</p>
+                {% if headers_info.warnings %}
+                    <p class="font-semibold mt-4 text-yellow-600">Warnings:</p>
+                    <ul>
+                        {% for warning in headers_info.warnings %}
+                            <li>- {{ warning }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% else %}
+                <p>Header analysis not performed or no data available.</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h2 class="section-title">SSL/TLS Analysis</h2>
+            {% set ssl_info = scan_results.ssl_info %}
+            {% if ssl_info and ssl_info.status == 'Success' %}
+                <p>Status: <span class="font-semibold">{{ ssl_info.status }}</span></p>
+                <p>TLS Version: {{ ssl_info.tls_versions | join(', ') }}</p>
+                <p>Cipher Suites:
+                    {% for cipher in ssl_info.cipher_suites %}
+                        {{ cipher.name }} ({{ cipher.tls_version }}, {{ cipher.bits }} bits){% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+                <p class="font-semibold mt-4">Certificate Details:</p>
+                <ul>
+                    <li>Subject: {{ ssl_info.certificate_details.subject.commonName or 'N/A' }}</li>
+                    <li>Issuer: {{ ssl_info.certificate_details.issuer.commonName or 'N/A' }}</li>
+                    <li>Valid From: {{ ssl_info.certificate_details.not_before }}</li>
+                    <li>Valid Until: {{ ssl_info.certificate_details.not_after }}</li>
+                    <li>Expiry Status: <span class="font-semibold {% if ssl_info.certificate_details.expiry_status == 'Expired' %}text-red-600{% elif ssl_info.certificate_details.expiry_status == 'Valid' %}text-green-600{% else %}text-yellow-600{% endif %}">{{ ssl_info.certificate_details.expiry_status }}</span></li>
+                    {% if ssl_info.certificate_details.days_remaining is not none %}
+                        <li>Days Remaining: {{ ssl_info.certificate_details.days_remaining }}</li>
+                    {% endif %}
+                    {% if ssl_info.certificate_details.alt_names %}
+                        <li>Alternative Names: {{ ssl_info.certificate_details.alt_names | join(', ') }}</li>
+                    {% endif %}
+                    {% if ssl_info.certificate_details.fingerprint_sha256 %}
+                        <li>SHA256 Fingerprint: <span class="font-mono text-sm">{{ ssl_info.certificate_details.fingerprint_sha256 }}</span></li>
+                    {% endif %}
+                </ul>
+                {% if ssl_info.warnings %}
+                    <p class="font-semibold mt-4 text-yellow-600">SSL Warnings:</p>
+                    <ul>
+                        {% for warn in ssl_info.warnings %}
+                            <li>- {{ warn }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% else %}
+                <p>SSL/TLS Analysis Status: {{ ssl_info.status if ssl_info else 'Not Performed' }}</p>
+                {% if ssl_info and ssl_info.errors %}
+                    <p class="font-semibold mt-4 text-red-600">SSL Errors:</p>
+                    <ul>
+                        {% for err in ssl_info.errors %}
+                            <li>- {{ err }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h2 class="section-title">Fuzzing Results</h2>
+            {% if scan_results.fuzzing_results %}
+                <ul>
+                    {% for fuzz_res in scan_results.fuzzing_results %}
+                        <li>
+                            <span class="font-bold text-red-600">[VULNERABLE]</span>
+                            <span class="font-semibold">{{ fuzz_res.payload_type | upper }}</span> at
+                            <a href="{{ fuzz_res.url }}" target="_blank" rel="noopener noreferrer">{{ fuzz_res.url }}</a>
+                            <br> Parameter: <span class="font-mono">{{ fuzz_res.param }}</span>
+                            <br> Payload: <span class="font-mono break-all">{{ fuzz_res.payload }}</span>
+                            <br> Details: {{ fuzz_res.details | join(', ') }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No fuzzing vulnerabilities detected.</p>
+            {% endif %}
+        </div>
+
+        <div class="text-center text-gray-500 mt-8 text-sm">
+            Report generated by ReconX
+        </div>
+    </div>
+</body>
+</html>
