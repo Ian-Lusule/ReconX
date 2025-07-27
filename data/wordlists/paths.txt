@@ -1,0 +1,16 @@
+admin/
+login.php
+index.php
+config.php
+test.php
+.env
+backup.zip
+admin.bak
+robots.txt
+sitemap.xml
+phpinfo.php
+.git/HEAD
+.svn/entries
+wp-admin/
+wp-login.php
+administrator/
