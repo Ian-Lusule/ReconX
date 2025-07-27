@@ -1,0 +1,71 @@
+{
+  "WordPress": {
+    "version_regex": "<meta name=\"generator\" content=\"WordPress ([\\d.]+)\"",
+    "paths": ["/wp-admin/", "/wp-login.php", "/wp-content/"],
+    "headers": {"x-powered-by": "WordPress"},
+    "html_keywords": ["wp-content", "wp-includes"]
+  },
+  "Joomla": {
+    "version_regex": "<meta name=\"generator\" content=\"Joomla! ([\\d.]+)\"",
+    "paths": ["/administrator/", "/media/system/js/core.js"],
+    "html_keywords": ["Joomla! Administration Login"]
+  },
+  "Laravel": {
+    "version_regex": "<!-- Laravel Version: ([\\d.]+) -->",
+    "paths": ["/.env", "/vendor/"],
+    "headers": {"x-powered-by": "Laravel"},
+    "html_keywords": ["csrf-token", "Laravel</title>"]
+  },
+  "Flask": {
+    "headers": {"server": "Werkzeug"},
+    "html_keywords": ["Debugger active!", "jinja2"],
+    "cookies": ["session"]
+  },
+  "Nginx": {
+    "headers": {"server": "nginx"}
+  },
+  "Apache": {
+    "headers": {"server": "apache"}
+  },
+  "PHP": {
+    "headers": {"x-powered-by": "PHP"}
+  },
+  "React": {
+    "html_keywords": ["<div id=\"root\">", "__REACT_DEVTOOLS_GLOBAL_HOOK__"],
+    "js_regex": ["React\\.createElement", "ReactDOM\\.render"]
+  },
+  "jQuery": {
+    "js_regex": ["jQuery\\s*=\\s*function", "\\$\\.\\fn\\.[a-zA-Z]"]
+  },
+  "Drupal": {
+    "version_regex": "<meta name=\"Generator\" content=\"Drupal ([\\d.]+)\"",
+    "paths": ["/core/", "/sites/default/files/"],
+    "html_keywords": ["Drupal", "js-drupal-html"],
+    "headers": {"x-drupal-cache": "HIT"}
+  },
+  "Magento": {
+    "version_regex": "var BASE_URL = '[^']+/([\\d.]+)/'",
+    "paths": ["/skin/frontend/", "/js/mage/"],
+    "html_keywords": ["Magento", "form_key"],
+    "cookies": ["frontend"]
+  },
+  "Shopify": {
+    "paths": ["/cdn/shop/"],
+    "html_keywords": ["Shopify", "data-shopify-features"],
+    "headers": {"x-shopify-storefront-access-token": ".*"}
+  },
+  "Node.js (Express)": {
+    "headers": {"x-powered-by": "Express"},
+    "html_keywords": ["Cannot GET /", "Cannot POST /"],
+    "cookies": ["connect.sid"]
+  },
+  "Ruby on Rails": {
+    "headers": {"x-powered-by": "Phusion Passenger", "x-runtime": ".*"},
+    "html_keywords": ["authenticity_token", "Rails"],
+    "cookies": ["_session"]
+  },
+  "Vue.js": {
+    "html_keywords": ["<div id=\"app\">", "__VUE_DEVTOOLS_GLOBAL_HOOK__"],
+    "js_regex": ["Vue\\.version", "new Vue\\("]
+  }
+}
