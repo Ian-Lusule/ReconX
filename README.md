@@ -43,7 +43,7 @@ Reports are sorted by severity, providing clear status indicators and export opt
 Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/ReconX.git
+git clone https://github.com/Ian-Lusule/ReconX.git
 cd ReconX
 ```
 
